@@ -1,0 +1,100 @@
+{% extends '_layout.html' %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+
+<h2 style="font-family: 'Bradley Hand', cursive; font-size: 28px; font-weight: bold;" class="nav shadow-md bg-blue-100 text-center ">Статистика текста</h2>
+
+<br>
+
+<form action="/stats" method="post" enctype="multipart/form-data">
+    <p>
+        <nav class="text-center ">
+        <label style="font-family: 'Bradley Hand', cursive; font-size: 20px; font-weight: bold;">Файл (.txt):</label><br>
+        <input type="file" name="file" required accept=".txt">
+        </nav>
+    </p>
+
+    <p class="text-center">
+        <label>
+            <input type="checkbox" name="pos">
+            Анализ частей речи
+        </label>
+    </p>
+
+    <br>
+
+    <p>
+       <div style="text-align: center;">
+       <button type="submit" class="btn shadow-md" style="font-family: 'Bradley Hand', cursive; font-size: 18px; ">Обработать</button>
+       </div>
+    </p>
+</form>
+
+{% if result %}
+<br>
+<div class="nav shadow-md bg-blue-100 text-center">
+    <h3>Результаты статистики:</h3>
+</div>
+
+<h4 style="text-align: center; margin: 15px ">Токены:</h4>
+<div style="display: flex; justify-content: center">
+    <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <tr>
+            <th style="padding: 10px 20px; background: #f5f5f5; border-bottom: 1px solid #ddd;">Абзацы</th>
+            <td style="padding: 10px 20px; border-bottom: 1px solid #ddd;">{{ result.tokens.paragraphs }}</td>
+        </tr>
+        <tr>
+            <th style="padding: 10px 20px; background: #f5f5f5; border-bottom: 1px solid #ddd;">Предложения</th>
+            <td style="padding: 10px 20px; border-bottom: 1px solid #ddd;">{{ result.tokens.sentences }}</td>
+        </tr>
+        <tr>
+            <th style="padding: 10px 20px; background: #f5f5f5;">Слова</th>
+            <td style="padding: 10px 20px;">{{ result.tokens.words }}</td>
+        </tr>
+    </table>
+</div>
+
+<h4 style="text-align: center; margin: 20px ">Символы:</h4>
+<div style="display: flex; justify-content: center;  margin: 30px">
+    <table style="border-collapse: collapse; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <thead>
+            <tr style="background: #f5f5f5;">
+                <th style="padding: 10px 20px;">Тип</th>
+                <th style="padding: 10px 20px;">Количество</th>
+                <th style="padding: 10px 20px;">Процент</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">Буквы</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.alphas.quantity }}</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.alphas.percent }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">Цифры</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.digits.quantity }}</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.digits.percent }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">Пробелы</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.spaces.quantity }}</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.spaces.percent }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">Пунктуация</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.punctuation.quantity }}</td>
+                <td style="padding: 8px 20px; border-top: 1px solid #ddd;">{{ result.symbols.punctuation.percent }}%</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+{% endif %}
+
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% endblock %}

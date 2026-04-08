@@ -1,0 +1,67 @@
+{% extends '_layout.html' %}
+
+{% block title %}Топ-слова{% endblock %}
+
+{% block header %}
+<h1 style="font-family: 'Bradley Hand', cursive; font-size: 28px; font-weight: bold;" class="nav shadow-md bg-blue-100 text-center">Топ-слова в тексте</h1>
+
+<br>
+
+{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <form action="/top" method="post" enctype="multipart/form-data">
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Выберите текстовый файл:</label>
+            <input type="file" name="file" required accept=".txt" style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Режим нормализации:</label>
+            <select name="normalize_mode" style="width: 100%; padding: 8px;">
+                <option value="stemming">Стемминг</option>
+                <option value="lemmatization">Лемматизация</option>
+            </select>
+        </div>
+
+        <button type="submit" style="font-family: 'Bradley Hand', cursive; font-size: 18px; width: 100%; padding: 10px; cursor: pointer;" class="nav shadow-md bg-blue-100 text-center">
+            Обработать
+        </button>
+    </form>
+</div>
+
+
+{% if result %}
+<br>
+<div class="nav shadow-md bg-blue-100 text-center">
+    <h3>Результаты (топ-20 слов):</h3>
+</div>
+<br>
+
+<table style="border: 1px solid #ddd; border-collapse: collapse; margin: 0 auto;">
+    <thead>
+        <tr style="background: #f5f5f5;">
+            <th style="padding: 10px; border: 1px solid #ddd;">№</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Слово</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Количество</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for word, count in result %}
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;">{{ loop.index }}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{{ word }}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{{ count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% endblock %}

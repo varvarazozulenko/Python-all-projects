@@ -1,0 +1,18 @@
+{% extends '_layout.html' %}
+
+{% block title %}Zozulenko KT2{% endblock %}
+
+{% block header %}
+<div class="hero bg-base-100 min-h-38">
+    <div class="hero-content text-center">
+        <h1 style="font-family: 'Bradley Hand', cursive; font-size: 38px; font-weight: bold;">Анализ текстовых данных</h1>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<nav class="nav min-h-15 shadow-md bg-blue-100 flex items-center justify-center">
+    <a href="/stats" class="btn shadow-md" style="font-family: 'Bradley Hand', cursive; font-size: 23px; margin-right: 50px;">Статистика</a>
+    <a href="/top" class="btn shadow-md" style="font-family: 'Bradley Hand', cursive; font-size: 23px;">Топ-слова</a>
+</nav>
+{% endblock %}
