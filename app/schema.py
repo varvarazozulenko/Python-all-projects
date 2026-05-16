@@ -33,8 +33,10 @@ class UserCreate(BaseModel):
 	:username: строка длиной не менее 2 символов
 	:password: строка длиной не менее 8 символов
 	"""
+	username: str = Field(..., min_length=2)
+	password: str = Field(..., min_length=8)
 
-	pass
+	#pass
 
 
 class UserProfile(BaseModel):
@@ -44,8 +46,9 @@ class UserProfile(BaseModel):
 
 	:username: строка
 	"""
+username: str
 
-	pass
+	#pass
 
 
 class Dream(BaseModel):
@@ -58,8 +61,14 @@ class Dream(BaseModel):
 	:author: строка, юзернейм автора
 	:created_at: строка, дататайм формата ISO
 	"""
+id: int
+description: str
+author: str = Field(..., alias='author_id')
+created_at: datetime
 
-	pass
+
+
+	#pass
 
 
 class NewDream(BaseModel):
@@ -69,8 +78,9 @@ class NewDream(BaseModel):
 
 	:description: строка длиной не менее 5
 	"""
+description: str = Field(..., min_length=5)
 
-	pass
+	#pass
 
 
 class MultipleDreams(BaseModel):
@@ -78,5 +88,7 @@ class MultipleDreams(BaseModel):
 	:dreams: список Dream-ов
 	:dreams_count: количество снов в подвыборке, целое число
 	"""
+dreams: list[Dream]
+dreams_count: int
 
-	pass
+	#pass

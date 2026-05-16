@@ -11,5 +11,15 @@ def get_by_username(*, cursor: Cursor, username: str) -> schema.UserProfile | No
 	Если пользователь не найден, возвращает None.
 	Иначе - возвращает запись согласно схеме.
 	"""
+	cursor.execute(
+		'SELECT username FROM users WHERE username = ?',
+		(username,)
+	)
+	result = cursor.fetchone()
 
-	raise NotImplemented
+	if not result:
+		return None
+
+	return schema.UserProfile(username=result[0])
+
+	#raise NotImplemented

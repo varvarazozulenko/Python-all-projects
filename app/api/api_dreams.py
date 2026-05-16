@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path, Query, status
+from fastapi import APIRouter, Path, Query, status, HTTPException
 
 from app import schema
 from app.api.exceptions import (
@@ -38,7 +38,16 @@ def get_dreams_list(
 	воспользоваться упомянутым в schema.py методом валидации ORM-слоя
 	"""
 
-	raise NotImplementedError
+	dreams_data, total_dreams_count = dreams_service.get_dreams_list(
+		session=session,
+		limit=limit,
+		offset=offset,
+		author_username=author  # Передаем имя автора для фильтрации
+	)
+
+	return schema.MultipleDreams(dreams=dreams_data, dreams_count=total_dreams_count)
+
+	#raise NotImplementedError
 
 
 @dreams_router.post(
@@ -65,8 +74,19 @@ def create_dream(
 	ошибки дублирования выбрасывает ConflictHTTPException с пояснением.
 	Иначе - возвращает результат согласно схеме.
 	"""
+	try:
+		created_dream = dreams_service.create_dream(
+			session=session,
+			dream_create=new_dream_payload,
+			author_username=current_user.username
+		)
+	except DuplicateDatabaseException as e:
+		raise ConflictHTTPException(detail='Данный сон уже добавлен') from e
 
-	raise NotImplementedError
+	return schema.Dream.model_validate(created_dream)
+
+
+#raise NotImplementedError
 
 
 @dreams_router.get(
@@ -87,8 +107,11 @@ def get_dream(
 	Если сон не найден, выбрасывает NotFoundHTTPException c пояснением.
 	Иначе - возвращает результат согласно схеме
 	"""
-
-	raise NotImplementedError
+	created_dream = dreams_service.get_by_id(session=session, id=id)
+	if created_dream is None:
+		raise NotFoundHTTPException(detail='Такой сон не найден')
+	return schema.Dream.model_validate(created_dream)
+#raise NotImplementedError
 
 
 @dreams_router.delete(
@@ -118,4 +141,13 @@ def delete(
 	Иначе - запрашивает dreams_service на удаление сна.
 	"""
 
-	raise NotImplementedError
+	create_dream = dreams_service.get_by_id(session=session, id=id)
+	if create_dream is None:
+		raise NotFoundHTTPException(detail='Сон с таким идентификатором не найден')
+
+	if create_dream.author_id != current_user.username:
+		raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Вы не являетесь автором сна')
+
+	dreams_service.delete(session=session, dream_id=id)
+
+	#raise NotImplementedError

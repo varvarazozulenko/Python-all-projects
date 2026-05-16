@@ -12,7 +12,7 @@ auth_router = APIRouter(prefix='/auth', tags=['Аккаунты'])
 @auth_router.post(
 	'/',
 	summary='Регистрация',
-	status_code=201,
+	status_code=200,
 	responses={
 		status.HTTP_409_CONFLICT: {'description': 'Выбранный юзернейм занят'},
 		status.HTTP_422_UNPROCESSABLE_CONTENT: {'description': 'Данные не валидны'},
@@ -27,8 +27,13 @@ def register(
 	Если пользователь найден, выбрасывает ConflictHTTPException с пояснением.
 	Иначе - проводит регистрацию через auth_service.
 	"""
+	existing_user = users_service.get_by_username(cursor=cursor, username=new_user_payload.username)
+	if existing_user is not None:
+		raise ConflictHTTPException(detail='Выбранное имя пользователя занято')
 
-	raise NotImplementedError
+	auth_service.register(cursor=cursor, user_data=new_user_payload)
+
+#raise NotImplementedError
 
 
 @auth_router.post(
@@ -51,8 +56,21 @@ def login(
 	Иначе - запрашивает аутентификацию через auth_service. Если пароль некорректен,
 	выбрасывает LoginHTTPException с пояснением. Иначе - возвращает токен согласно схеме.
 	"""
+	existing_user = users_service.get_by_username(cursor=cursor, username=user_credentials.username)
+	if existing_user is None:
+		raise LoginHTTPException
 
-	raise NotImplementedError
+	access_token = auth_service.authenticate(
+			cursor=cursor,
+			username=user_credentials.username,
+			password=user_credentials.password,
+		)
+	if access_token is None:
+			raise LoginHTTPException
+
+	return schema.UserToken(access_token=access_token)
+
+	#raise NotImplementedError
 
 
 @auth_router.get(
@@ -70,5 +88,6 @@ def get_current(
 	Получает текущего пользователя через инъекцию зависимостей, в случае
 	ошибки выбрасывает CredentialsHTTPException. Иначе - отвечает согласно схеме.
 	"""
+	return current_user
 
-	raise NotImplementedError
+	#raise NotImplementedError
